@@ -20,20 +20,28 @@ jobs:
           username: ubuntu
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            # bash -l ব্যবহার করে আপনার সার্ভারের আসল প্রোফাইল লোড করা হচ্ছে যেন npm/pm2 পাওয়া যায়
-            bash -l -c '
-              # ১. প্রজেক্ট ফোল্ডারে যাওয়া
-              cd ~/applications/rishabhbhard-backend
-              
-              # ২. গিট থেকে লেটেস্ট কোড টানা
-              git pull origin main
-              
-              # ৩. ডিপেন্ডেন্সি ইন্সটল করা
-              npm install --omit=dev
-              
-              # ৪. র‍্যামের সাইজ বাড়িয়ে প্রজেক্ট বিল্ড করা
-              NODE_OPTIONS="--max-old-space-size=3072" npm run build
-              
-              # ৫. PM2 রিস্টার্ট করা
-              pm2 restart all
-            '
+            # ১. সার্ভারে npm এবং pm2 কোথায় আছে তা অটোমেটিক খুঁজে বের করা
+            NODE_BIN_DIR=$(find $HOME -type d -name "node" -prune -o -path "*/bin/npm" -exec dirname {} \; 2>/dev/null | head -n 1)
+            
+            # যদি উপরে না পায়, তবে কমন ডিরেক্টরিগুলো চেক করা
+            if [ -z "$NODE_BIN_DIR" ]; then
+              NODE_BIN_DIR="/usr/local/bin:/usr/bin"
+            fi
+            
+            # ২. খুঁজে পাওয়া পথটি এনভায়রনমেন্টে ইনজেক্ট করা
+            export PATH="$NODE_BIN_DIR:$HOME/.local/bin:$PATH"
+
+            # ৩. প্রজেক্ট ফোল্ডারে যাওয়া
+            cd ~/applications/rishabhbhard-backend
+            
+            # ৪. গিট থেকে লেটেস্ট কোড টানা
+            git pull origin main
+            
+            # ৫. একদম সঠিক ফাইল দিয়ে কমান্ড রান করা
+            npm install --omit=dev
+            
+            # ৬. মেমরি বাড়িয়ে বিল্ড করা
+            NODE_OPTIONS="--max-old-space-size=3072" npm run build
+            
+            # ৭. PM2 রিস্টার্ট করা
+            pm2 restart all
