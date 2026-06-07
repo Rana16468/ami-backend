@@ -20,26 +20,20 @@ jobs:
           username: ubuntu
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            # 1. Directly inject the actual interactive shell PATH into this session
-            # This loads the exact environment you see when you manually log in
-            export PATH="/home/ubuntu/.nvm/versions/node/$(node -v 2>/dev/null || echo 'default')/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
-            
-            # Alternative bulletproof method: Source your actual interactive .bashrc file
-            # We tell bash to act interactively so it doesn't skip loading profiles
-            source ~/.profile 2>/dev/null
-            source ~/.bashrc 2>/dev/null
-
-            # 2. Navigate to application directory
-            cd ~/applications/rishabhbhard-backend
-            
-            # 3. Fetch latest changes
-            git pull origin main
-            
-            # 4. Install dependencies (Using absolute command discovery)
-            $(which npm) install --production
-            
-            # 5. Run the memory-optimized build
-            NODE_OPTIONS="--max-old-space-size=3072" $(which npm) run build
-            
-            # 6. Restart PM2
-            $(which pm2) restart all
+            # bash -l ব্যবহার করে আপনার সার্ভারের আসল প্রোফাইল লোড করা হচ্ছে যেন npm/pm2 পাওয়া যায়
+            bash -l -c '
+              # ১. প্রজেক্ট ফোল্ডারে যাওয়া
+              cd ~/applications/rishabhbhard-backend
+              
+              # ২. গিট থেকে লেটেস্ট কোড টানা
+              git pull origin main
+              
+              # ৩. ডিপেন্ডেন্সি ইন্সটল করা
+              npm install --omit=dev
+              
+              # ৪. র‍্যামের সাইজ বাড়িয়ে প্রজেক্ট বিল্ড করা
+              NODE_OPTIONS="--max-old-space-size=3072" npm run build
+              
+              # ৫. PM2 রিস্টার্ট করা
+              pm2 restart all
+            '
