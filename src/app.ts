@@ -76,17 +76,17 @@ cron.schedule("*/30 * * * *", async () => {
 
 //autoDeleteChatBotInfo 
 
-cron.schedule("*/30 * * * *", async () => {
-  try {
+// cron.schedule("*/30 * * * *", async () => {
+//   try {
    
 
-   const result= await autoDeleteChatBotInfo();
-   console.log(result);
+//    const result= await autoDeleteChatBotInfo();
+//    console.log(result);
 
-  } catch (error) {
-    catchError(error, "[Cron] Error in chatbot auto delete cron job:");
-  }
-});
+//   } catch (error) {
+//     catchError(error, "[Cron] Error in chatbot auto delete cron job:");
+//   }
+// });
 
 
 

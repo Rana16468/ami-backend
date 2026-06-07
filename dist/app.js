@@ -26,7 +26,6 @@ const globalErrorHandelar_1 = __importDefault(require("./middleware/globalErrorH
 const auto_delete_unverified_user_1 = __importDefault(require("./utility/auto_delete_unverified_user"));
 const catchError_1 = __importDefault(require("./app/error/catchError"));
 const auto_delete_notification_1 = __importDefault(require("./utility/auto_delete_notification"));
-const autoDeleteChatBotInfo_1 = __importDefault(require("./utility/autoDeleteChatBotInfo"));
 const app = (0, express_1.default)();
 // ======= Middlewares =======
 app.use((0, cookie_parser_1.default)());
@@ -62,15 +61,14 @@ node_cron_1.default.schedule("*/30 * * * *", () => __awaiter(void 0, void 0, voi
     }
 }));
 //autoDeleteChatBotInfo 
-node_cron_1.default.schedule("*/30 * * * *", () => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const result = yield (0, autoDeleteChatBotInfo_1.default)();
-        console.log(result);
-    }
-    catch (error) {
-        (0, catchError_1.default)(error, "[Cron] Error in chatbot auto delete cron job:");
-    }
-}));
+// cron.schedule("*/30 * * * *", async () => {
+//   try {
+//    const result= await autoDeleteChatBotInfo();
+//    console.log(result);
+//   } catch (error) {
+//     catchError(error, "[Cron] Error in chatbot auto delete cron job:");
+//   }
+// });
 // ======= API Routes =======
 app.use("/api/v1", router_1.default);
 // ======= 404 & Global Error Handler =======
