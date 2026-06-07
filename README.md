@@ -6,3 +6,5 @@
   # 4 Type Script
   # 5 chatbot system
   # 6 ai data store 
+
+  here cicd added
