@@ -3,7 +3,7 @@ name: Deploy Backend Server
 on:
   push:
     branches:
-      - main  # Change this to 'master' if your default branch is master
+      - main
 
 jobs:
   deploy:
@@ -20,17 +20,25 @@ jobs:
           username: ubuntu
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            # Navigate to application directory
+            # 1. Force load bash profile to bring Node, NPM, and PM2 into scope
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+            
+            # If you are not using NVM, fallback to adding common paths
+            export PATH=$PATH:/usr/bin:/usr/local/bin:$HOME/.npm-global/bin
+
+            # 2. Navigate to application directory
             cd ~/applications/rishabhbhard-backend
             
-            # Fetch latest changes
+            # 3. Fetch latest changes
             git pull origin main
             
-            # Install production dependencies
+            # 4. Install dependencies
             npm install --production
             
-            # Run the build with the explicit memory allocation
+            # 5. Run the memory-optimized build
             NODE_OPTIONS="--max-old-space-size=3072" npm run build
             
-            # Restart the PM2 process
+            # 6. Restart PM2
             pm2 restart all
