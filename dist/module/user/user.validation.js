@@ -68,6 +68,12 @@ const ForgotPasswordSchema = zod_1.z.object({
             .string({ required_error: "phone number is required" })
     }),
 });
+const ForgotPasswordEmailSchema = zod_1.z.object({
+    body: zod_1.z.object({
+        email: zod_1.z
+            .string({ required_error: "phone number is required" })
+    }),
+});
 const verificationCodeSchema = zod_1.z.object({
     body: zod_1.z.object({
         phoneNumber: zod_1.z.string({ required_error: "phone number is required" }),
@@ -89,5 +95,6 @@ const UserValidationSchema = {
     ForgotPasswordSchema,
     verificationCodeSchema,
     resetPasswordSchema,
+    ForgotPasswordEmailSchema
 };
 exports.default = UserValidationSchema;

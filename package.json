@@ -20,6 +20,7 @@
   "description": "",
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1007.0",
+    "@getbrevo/brevo": "^5.0.4",
     "@google/genai": "^1.39.0",
     "@google/generative-ai": "^0.24.1",
     "archiver": "^7.0.1",

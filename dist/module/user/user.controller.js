@@ -114,6 +114,15 @@ const createAdminAccount = (0, catchAsync_1.default)((req, res) => __awaiter(voi
         data: result,
     });
 }));
+const forgotPasswordEmail = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield user_services_1.default.forgotPasswordEmailIntoDb(req.body);
+    (0, sendRespone_1.default)(res, {
+        success: true,
+        statusCode: http_status_1.default.OK,
+        message: "Successfully  Send The Email",
+        data: result,
+    });
+}));
 const UserController = {
     createUser,
     userVarification,
@@ -124,6 +133,7 @@ const UserController = {
     googleAuth,
     resendVerificationOtp,
     getUserGrowth,
-    createAdminAccount
+    createAdminAccount,
+    forgotPasswordEmail
 };
 exports.default = UserController;

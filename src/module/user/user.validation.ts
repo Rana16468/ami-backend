@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { string, z } from 'zod';
 import { USER_ACCESSIBILITY, USER_ROLE } from './user.constant';
 
  const createUserZodSchema = z.object({
@@ -86,6 +86,14 @@ const ForgotPasswordSchema = z.object({
   }),
 });
 
+const ForgotPasswordEmailSchema = z.object({
+  body: z.object({
+     email: z
+        .string({required_error:"phone number is required"})
+  
+  }),
+});
+
 const verificationCodeSchema = z.object({
   body: z.object({
     phoneNumber:z.string({required_error:"phone number is required"}),
@@ -110,6 +118,7 @@ const UserValidationSchema = {
   ForgotPasswordSchema,
   verificationCodeSchema,
   resetPasswordSchema,
+  ForgotPasswordEmailSchema
 };
 
 export default UserValidationSchema;

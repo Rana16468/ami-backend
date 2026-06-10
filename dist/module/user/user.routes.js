@@ -20,5 +20,6 @@ router.post("/google_auth", (0, validationRequest_1.default)(user_validation_1.d
 router.get("/resend_verification_otp/:email", user_controller_1.default.resendVerificationOtp);
 router.get("/user_graph", (0, auth_1.default)(user_constant_1.USER_ROLE.admin, user_constant_1.USER_ROLE.superAdmin), user_controller_1.default.getUserGrowth);
 router.post("/create_admin_account", (0, validationRequest_1.default)(user_validation_1.default.createUserZodSchema), user_controller_1.default.createAdminAccount);
+router.post("/forgot_password_email", (0, validationRequest_1.default)(user_validation_1.default.ForgotPasswordEmailSchema), user_controller_1.default.forgotPasswordEmail);
 const UserRouters = router;
 exports.default = UserRouters;

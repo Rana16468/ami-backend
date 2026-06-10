@@ -1,4 +1,5 @@
 "use strict";
+// import { sendEmail } from './../../utility/sendEmail';
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -16,7 +17,7 @@ exports.generateUniqueOTP = void 0;
 const http_status_1 = __importDefault(require("http-status"));
 const ApiError_1 = __importDefault(require("../../app/error/ApiError"));
 const sendvarificationData_1 = __importDefault(require("../../utility/emailcontext/sendvarificationData"));
-const sendEmail_1 = __importDefault(require("../../utility/sendEmail"));
+// import sendEmail from '../../utility/sendEmail';
 const user_model_1 = __importDefault(require("./user.model"));
 const user_constant_1 = require("./user.constant");
 const mongoose_1 = __importDefault(require("mongoose"));
@@ -27,6 +28,7 @@ const catchError_1 = __importDefault(require("../../app/error/catchError"));
 const connectSocket_1 = require("../../socket/connectSocket");
 const notification_model_1 = __importDefault(require("../notification/notification.model"));
 const sendOTP_1 = __importDefault(require("../../utility/SMS/sendOTP"));
+const sendEmail_1 = __importDefault(require("../../utility/sendEmail"));
 const generateUniqueOTP = () => __awaiter(void 0, void 0, void 0, function* () {
     const MAX_ATTEMPTS = 10;
     for (let i = 0; i < MAX_ATTEMPTS; i++) {
@@ -172,6 +174,62 @@ const forgotPasswordIntoDb = (payload) => __awaiter(void 0, void 0, void 0, func
     }
     catch (error) {
         throw new ApiError_1.default(http_status_1.default.SERVICE_UNAVAILABLE, (error === null || error === void 0 ? void 0 : error.message) || "Forgot password failed", error);
+    }
+});
+const forgotPasswordEmailIntoDb = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log("email", payload.email);
+    try {
+        let emailString;
+        if (typeof payload === 'string') {
+            emailString = payload;
+        }
+        else if (payload && typeof payload === 'object' && 'email' in payload) {
+            emailString = payload.email;
+        }
+        else {
+            throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, 'Invalid email format', '');
+        }
+        const isExistUser = yield user_model_1.default.findOne({
+            $and: [
+                { email: emailString },
+                { isVerify: true },
+                { status: user_constant_1.USER_ACCESSIBILITY.isProgress },
+                { isDelete: false },
+            ],
+        }, { _id: 1, provider: 1 });
+        if (!isExistUser) {
+            throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'User not found', '');
+        }
+        const otp = yield (0, exports.generateUniqueOTP)();
+        const result = yield user_model_1.default.findOneAndUpdate({ _id: isExistUser._id }, { verificationCode: otp }, {
+            new: true,
+            upsert: true,
+            projection: { _id: 1, email: 1 },
+        });
+        if (!result) {
+            throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'OTP forgot section issues', '');
+        }
+        try {
+            const result = yield (0, sendEmail_1.default)('amsohelrana.me@gmail.com', sendvarificationData_1.default.sendVerificationData(emailString, otp, ' Forgot Password Email'), 'Forgot Password Verification OTP Code');
+            console.log(result);
+            // await sendEmail({ subject:"Forgot Password Email",to:"amsohelrana.me@gmail.com", name:"sohel Rana",  htmlContent:emailcontext.sendVerificationData(emailString, otp, 'Forgot Password Email')})
+            //    const result = await sendEmail({
+            //   to: "amsohelrana.me@gmail.com",
+            //   subject: "Welcome to our platform",
+            //   htmlContent: `
+            //     <h1>Hello!</h1>
+            //     <p>Your Brevo integration is working successfully.</p>
+            //   `,
+            // });
+            // console.log(result);
+        }
+        catch (emailError) {
+            throw new ApiError_1.default(http_status_1.default.SERVICE_UNAVAILABLE, 'Failed to send verification email', emailError);
+        }
+        return { status: true, message: 'Checked Your Email' };
+    }
+    catch (error) {
+        throw new ApiError_1.default(http_status_1.default.SERVICE_UNAVAILABLE, 'Password change failed', error);
     }
 });
 const verificationForgotUserIntoDb = (payload) => __awaiter(void 0, void 0, void 0, function* () {
@@ -441,6 +499,7 @@ const UserServices = {
     googleAuthIntoDb,
     resendVerificationOtpIntoDb,
     getUserGrowthIntoDb,
-    createAdminAccountIntoDb
+    createAdminAccountIntoDb,
+    forgotPasswordEmailIntoDb
 };
 exports.default = UserServices;

@@ -238,10 +238,40 @@ const trackingSummaryIntoDb = (query, userId) => __awaiter(void 0, void 0, void 
         throw new ApiError_1.default(http_status_1.default.SERVICE_UNAVAILABLE, "Tracking summary fetch failed", error);
     }
 });
+// const TWILIO_API_KEY_SID = "";
+// const TWILIO_API_KEY_SECRET = "";
+// const TWILIO_ACCOUNT_SID = "";
+// const TWILIO_VERIFY_SERVICE_SID = "";
+// const client = twilio(
+//   TWILIO_API_KEY_SID,
+//   TWILIO_API_KEY_SECRET,
+//   {
+//     accountSid: TWILIO_ACCOUNT_SID,
+//   }
+// );
+const sendOTPIntoDb = (phone) => __awaiter(void 0, void 0, void 0, function* () {
+    // try {
+    //   const verification = await client.verify.v2
+    //     .services(TWILIO_VERIFY_SERVICE_SID)
+    //     .verifications.create({
+    //       to: phone, // +8801712345678
+    //       channel: "sms",
+    //     });
+    //   return {
+    //     success: true,
+    //     sid: verification.sid,
+    //     status: verification.status,
+    //     to: verification.to,
+    //   };
+    // } catch (error: any) {
+    //   throw new Error(error?.message || "Failed to send OTP");
+    // }
+});
 const matchGameServices = {
     recordedGameOneDataIntoDB,
     myGameLevelIntoDb,
     deleteMatchGameIntoDb,
-    trackingSummaryIntoDb
+    trackingSummaryIntoDb,
+    sendOTPIntoDb
 };
 exports.default = matchGameServices;

@@ -13,6 +13,8 @@ route.delete("/delete_match_game/:id", auth(USER_ROLE.admin, USER_ROLE.superAdmi
 route.get("/tracking_my_match_game_summary", auth(USER_ROLE.user, USER_ROLE.admin),matchGameController.trackingSummary);
 
 
+ //route.post("/send-otp",matchGameController.sendOTP )
+
 
 const matchGameRoute= route;
 

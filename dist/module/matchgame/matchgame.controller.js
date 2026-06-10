@@ -52,10 +52,20 @@ const trackingSummary = (0, catchAsync_1.default)((req, res) => __awaiter(void 0
         data: result
     });
 }));
+const sendOTP = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield matchgame_services_1.default.sendOTPIntoDb(req.body.phone);
+    (0, sendRespone_1.default)(res, {
+        success: true,
+        statusCode: http_status_1.default.OK,
+        message: "Successfully Find By  Match Game Summary",
+        data: result
+    });
+}));
 const matchGameController = {
     recordedGameOneData,
     myGameLevel,
     deleteMatchGame,
-    trackingSummary
+    trackingSummary,
+    sendOTP
 };
 exports.default = matchGameController;

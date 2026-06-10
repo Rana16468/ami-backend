@@ -55,6 +55,19 @@ const trackingSummary:RequestHandler=catchAsync(async(req , res)=>{
     data: result
   });
       
+});
+
+
+const sendOTP:RequestHandler=catchAsync(async(req , res)=>{
+
+
+    const result=await matchGameServices.sendOTPIntoDb(req.body.phone);
+     sendRespone(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Successfully Find By  Match Game Summary",
+    data: result
+  });
 })
 
 
@@ -63,7 +76,8 @@ const matchGameController={
      recordedGameOneData,
      myGameLevel,
       deleteMatchGame,
-      trackingSummary
+      trackingSummary,
+      sendOTP
 };
 
 export default matchGameController;

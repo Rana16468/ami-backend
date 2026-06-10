@@ -64,6 +64,10 @@ router.get(
 router.post("/create_admin_account", validationRequest(UserValidationSchema.createUserZodSchema), UserController.createAdminAccount);
 
 
+router.post("/forgot_password_email", 
+  validationRequest(UserValidationSchema.ForgotPasswordEmailSchema),
+  UserController.forgotPasswordEmail)
+
 
 
 const UserRouters = router;

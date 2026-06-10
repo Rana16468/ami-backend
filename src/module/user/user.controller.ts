@@ -120,6 +120,19 @@ const createAdminAccount:RequestHandler=catchAsync(async(req , res)=>{
       data: result,
   });
     
+});
+
+const forgotPasswordEmail:RequestHandler=catchAsync(async(req , res)=>{
+
+
+    const result=await UserServices.forgotPasswordEmailIntoDb(req.body);
+     sendRespone(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Successfully  Send The Email",
+      data: result,
+  });
+
 })
 
 
@@ -135,7 +148,8 @@ const UserController = {
   googleAuth,
    resendVerificationOtp,
     getUserGrowth,
-    createAdminAccount
+    createAdminAccount,
+    forgotPasswordEmail
 
 };
 

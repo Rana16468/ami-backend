@@ -1,7 +1,9 @@
+// import { sendEmail } from './../../utility/sendEmail';
+
 import httpStatus from 'http-status';
 import ApiError from '../../app/error/ApiError';
 import emailcontext from '../../utility/emailcontext/sendvarificationData';
-import sendEmail from '../../utility/sendEmail';
+// import sendEmail from '../../utility/sendEmail';
 import users from './user.model';
 import { USER_ACCESSIBILITY } from './user.constant';
 import { TUser } from './user.interface';
@@ -13,6 +15,8 @@ import catchError from '../../app/error/catchError';
 import { getSocketIO } from '../../socket/connectSocket';
 import notifications from '../notification/notification.model';
 import twilio_sms_services from '../../utility/SMS/sendOTP';
+import sendEmail from '../../utility/sendEmail';
+
 
 export const generateUniqueOTP = async (): Promise<number> => {
   const MAX_ATTEMPTS = 10;
@@ -268,6 +272,108 @@ const forgotPasswordIntoDb = async (payload: { phoneNumber: string }) => {
       httpStatus.SERVICE_UNAVAILABLE,
       error?.message || "Forgot password failed",
       error
+    );
+  }
+};
+
+const forgotPasswordEmailIntoDb = async (payload:  { email: string }) => {
+ 
+
+
+  console.log("email", payload.email)
+
+  try {
+    let emailString: string;
+
+    if (typeof payload === 'string') {
+      emailString = payload;
+    } else if (payload && typeof payload === 'object' && 'email' in payload) {
+      emailString = payload.email;
+    } else {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid email format', '');
+    }
+
+    const isExistUser = await users.findOne(
+      {
+        $and: [
+          { email: emailString },
+          { isVerify: true },
+          { status: USER_ACCESSIBILITY.isProgress },
+          { isDelete: false },
+        ],
+      },
+      { _id: 1, provider: 1 },
+     
+    );
+
+    if (!isExistUser) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'User not found', '');
+    }
+
+    const otp = await generateUniqueOTP();
+
+    const result = await users.findOneAndUpdate(
+      { _id: isExistUser._id },
+      { verificationCode: otp },
+      {
+        new: true,
+        upsert: true,
+        projection: { _id: 1, email: 1 },
+       
+      },
+    );
+
+    if (!result) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'OTP forgot section issues', '');
+    }
+
+    try {
+      const result=await sendEmail(
+        'amsohelrana.me@gmail.com',
+        emailcontext.sendVerificationData(
+          emailString,
+          otp,
+          ' Forgot Password Email',
+        ),
+        'Forgot Password Verification OTP Code',
+      );
+
+      console.log(result);
+
+      
+
+      // await sendEmail({ subject:"Forgot Password Email",to:"amsohelrana.me@gmail.com", name:"sohel Rana",  htmlContent:emailcontext.sendVerificationData(emailString, otp, 'Forgot Password Email')})
+    //    const result = await sendEmail({
+    //   to: "amsohelrana.me@gmail.com",
+    //   subject: "Welcome to our platform",
+    //   htmlContent: `
+    //     <h1>Hello!</h1>
+    //     <p>Your Brevo integration is working successfully.</p>
+    //   `,
+    // });
+
+    // console.log(result);
+
+
+    } catch (emailError: any) {
+      
+      throw new ApiError(
+        httpStatus.SERVICE_UNAVAILABLE,
+        'Failed to send verification email',
+        emailError,
+      );
+    }
+
+   
+
+    return { status: true, message: 'Checked Your Email' };
+  } catch (error: any) {
+   
+
+    throw new ApiError(
+      httpStatus.SERVICE_UNAVAILABLE,
+      'Password change failed',
+      error,
     );
   }
 };
@@ -671,7 +777,8 @@ const UserServices = {
    googleAuthIntoDb ,
     resendVerificationOtpIntoDb,
      getUserGrowthIntoDb,
-     createAdminAccountIntoDb
+     createAdminAccountIntoDb,
+     forgotPasswordEmailIntoDb
 
 };
 export default UserServices;
