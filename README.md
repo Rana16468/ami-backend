@@ -328,7 +328,7 @@ This project is a full-stack application consisting of a backend API, an admin d
 
 ---
 
-## 🔄 CI/CD (Continuous Integration & Continuous Deployment)
+##  CI/CD (Continuous Integration & Continuous Deployment)
 
 ### CI/CD Pipeline Overview
 - The project includes **automated CI/CD pipeline** for both backend and frontend.
