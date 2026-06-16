@@ -300,3 +300,120 @@ model<TTermsConditions, TermsConditionsModel>("termsConditions", TermsConditionS
 ### 4. `TileClick` has no `_id`
  
 The `TileClickSchema` is defined with `{ _id: false }`. This is intentional — tile clicks are treated as plain data inside a game session, not as independently addressable documents. Just know that if you ever need to update a specific tile click, you'll have to match on its content fields rather than an ID
+
+# Project Deployment & Infrastructure Setup
+
+## Overview
+This project is a full-stack application consisting of a backend API, an admin dashboard frontend, and cloud-based media and communication services. The system is deployed using cloud infrastructure with automated CI/CD pipelines for continuous deployment.
+
+---
+
+##  Deployment Architecture
+
+### 1. Backend Deployment (AWS)
+- The backend is hosted on **Amazon Web Services (AWS)**.
+- It provides REST APIs for the frontend and handles all core business logic.
+- Deployed using:
+  - AWS EC2 / Elastic Beanstalk
+  - PM2 process manager (Node.js production environment)
+- Environment variables are securely managed using `.env`.
+
+---
+
+### 2. Frontend Deployment (Admin Dashboard - GoDaddy)
+- The admin dashboard is built with **React (Vite)**.
+- Deployed on **GoDaddy hosting (cPanel / FTP)**.
+- Production build is generated using `npm run build`.
+- The frontend communicates with AWS-hosted backend APIs.
+
+---
+
+## 🔄 CI/CD (Continuous Integration & Continuous Deployment)
+
+### CI/CD Pipeline Overview
+- The project includes **automated CI/CD pipeline** for both backend and frontend.
+- Every push to the main branch triggers an automated deployment process.
+
+### Backend CI/CD (AWS)
+- Source control: GitHub / GitLab
+- Pipeline tool: GitHub Actions / AWS CodePipeline
+- Steps:
+  1. Code push to repository
+  2. Automated build & dependency install
+  3. Run tests (if applicable)
+  4. Deploy to AWS EC2 / Elastic Beanstalk
+  5. Restart backend service using PM2
+- Ensures zero-downtime or minimal downtime deployments.
+
+---
+
+### Frontend CI/CD (GoDaddy Deployment)
+- Frontend build is automatically generated via CI pipeline.
+- Steps:
+  1. Push to repository
+  2. Install dependencies
+  3. Run build (`npm run build`)
+  4. Upload build files to GoDaddy via FTP / cPanel deployment script
+- Ensures updated UI is always live after deployment.
+
+---
+
+##  Media Storage (AWS S3)
+- All audio and video recordings are stored in Amazon S3 Bucket.
+- Features:
+  - Secure file storage
+  - Scalable media hosting
+  - Fast delivery via AWS infrastructure
+- Uploads are handled directly from backend using AWS SDK.
+
+---
+
+##  Email Service (Brevo)
+- Email service is integrated using Brevo (Sendinblue)**.
+- Currently facing issues:
+  - SMTP/API configuration errors
+  - Email delivery failures
+- Needs troubleshooting for:
+  - API key validation
+  - Domain authentication (SPF/DKIM)
+  - Sending limits
+
+---
+
+##  SMS / OTP Service (Twilio)
+- Twilio is used for SMS/OTP verification.
+- Currently not working due to setup issues:
+  - Invalid credentials or configuration mismatch
+  - Messaging service setup not completed
+- Requires reconfiguration and testing in production.
+
+---
+
+##  Known Issues
+- Twilio SMS service is not functional (configuration issue)
+- Brevo email service is not sending emails
+- Requires environment variable review and API re-validation
+
+---
+
+##  Tech Stack Summary
+- **Backend:** Node.js, Express.js
+- **Frontend:** React (Vite), TypeScript, Tailwind CSS
+- **Database:** MongoDB
+- **Cloud Storage:** AWS S3
+- **Backend Hosting:** AWS
+- **Frontend Hosting:** GoDaddy
+- **CI/CD:** GitHub Actions / AWS CodePipeline
+- **Email Service:** Brevo (issue pending)
+- **SMS Service:** Twilio (issue pending)
+
+---
+
+##  Future Improvements
+- Fix Twilio SMS integration
+- Resolve Brevo email issues
+- Improve CI/CD pipeline with rollback strategy
+- Add monitoring (AWS CloudWatch / Sentry)
+- Implement automated testing in pipeline
+
+--
